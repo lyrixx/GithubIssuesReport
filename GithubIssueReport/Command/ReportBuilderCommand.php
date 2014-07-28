@@ -29,7 +29,6 @@ class ReportBuilderCommand extends Command
     {
         $output->writeln('HackDay');
         $output->writeln('=======');
-        $output->writeln('');
 
         $issues = array();
         foreach ($input->getArgument('repositories') as $repository) {
@@ -37,14 +36,15 @@ class ReportBuilderCommand extends Command
             if (!$issues) {
                 continue;
             }
+            $output->writeln('');
             $output->writeln($repository);
             $output->writeln(str_repeat('-', strlen($repository)));
             $output->writeln('');
-            $output->writeln('| Issue | labels | size');
-            $output->writeln('|:------|:-------|:----');
+            $output->writeln('| Issue | labels | ETA');
+            $output->writeln('|:------|:-------|:---');
 
             foreach ($issues as $issue) {
-                $output->writeln(sprintf('[%s](%s) | %s | %s', $issue['title'], $issue['url'], $this->getLabelsAsString($issue), 'n-a'));
+                $output->writeln(sprintf('[%s](%s) | %s | %s', $this->getTitle($issue), $issue['url'], $this->getLabelsAsString($issue), $this->getETA($issue)));
             }
         }
     }
@@ -67,20 +67,42 @@ class ReportBuilderCommand extends Command
 
     private function getLabelsAsString(array $issue)
     {
-        if (!isset($issue['labels'])) {
-            return '';
-        }
-
         $labels = '';
         foreach ($issue['labels'] as $label) {
+            $label = $label['name'];
             if ('hackday' === $label) {
                 continue;
             }
 
-            $labels .= $label['name'];
+            if (in_array(strtolower($label), array('s', 'm', 'l', 'xl', 'xxl'))) {
+                continue;
+            }
+
+            $labels .= $label. ' ';
         }
 
-        return $labels;
+        return trim($labels);
+    }
+
+    private function getETA(array $issue)
+    {
+        if (preg_match('/^eta\s*[:=]*\s*(.*)$/i', $issue['body'], $matches)) {
+            return $matches[1];
+        }
+
+        foreach ($issue['labels'] as $label) {
+            $label = $label['name'];
+            if (in_array(strtolower($label), array('s', 'm', 'l', 'xl', 'xxl'))) {
+                return $label;
+            }
+        }
+
+        return 'n-a';
+    }
+
+    private function getTitle(array $issue)
+    {
+        return htmlentities($issue['title']);
     }
 
     private function getGithubClient(InputInterface $input, OutputInterface $output)
