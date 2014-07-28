@@ -1,0 +1,19 @@
+{
+    "name": "lyrixx/github-issues-report",
+    "description": "Build a report from Github issues",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Grégoire Pineau",
+            "email": "lyrixx@lyrixx.info"
+        }
+    ],
+    "require": {
+        "guzzle/guzzle": "3.8.*@dev",
+        "knplabs/github-api": "1.3.*@dev",
+        "symfony/console": "~2.5"
+    },
+    "autoload": {
+        "psr-4": { "Lyrixx\\": "" }
+    }
+}
