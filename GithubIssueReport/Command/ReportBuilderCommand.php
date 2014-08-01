@@ -44,7 +44,7 @@ class ReportBuilderCommand extends Command
             $output->writeln('|:------|:-------|:---');
 
             foreach ($issues as $issue) {
-                $output->writeln(sprintf('[%s](%s) | %s | %s', $this->getTitle($issue), $issue['url'], $this->getLabelsAsString($issue), $this->getETA($issue)));
+                $output->writeln(sprintf('[%s](%s) #%d | %s | %s', $this->getTitle($issue), $issue['html_url'], $issue['number'], $this->getLabelsAsString($issue), $this->getETA($issue)));
             }
         }
     }
